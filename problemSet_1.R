@@ -149,3 +149,5 @@ averageHorsePower <- c(mean(mtcars$hp))
 averageHorsePower
 averageWeight <- c(mean(mtcars$wt))
 averageWeight
+
+#20
