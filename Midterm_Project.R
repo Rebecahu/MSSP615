@@ -61,6 +61,7 @@ filter_q3 <- filter(strawb, Year == "2016" &
                       Domain != "ORGANIC STATUS")
 # filter_q3 <- filter (filter_q3, Value != "(NA)" & Value != "(D)", Domain != "TOTAL")
 
+
 # install.packages("gmodels")
 # install.packages("Rmisc")
 library(gmodels)
