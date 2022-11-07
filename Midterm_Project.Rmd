@@ -81,6 +81,8 @@ filter_q3 <- filter (filter_q3, Value != "(NA)" & Value != "(D)", Domain != "TOT
 library(gmodels)
 library(Rmisc)
 CI(as.numeric(filter_q3$Value))     ##(-10378.79, 199946.13)
+##Because the date set have NA variable in it, and the CI contains nagative values, 
+##so the answer is NA. 
 ```
 Q4. How many different chemicals are listed?
 ```{r}
