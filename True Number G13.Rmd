@@ -1,0 +1,226 @@
+---
+title: "True Number"
+author: "Runci Hu, Tong Sun, Tianjian Xie"
+date: "2022-11-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(magrittr)
+library(tnum)
+tnum.loadLibs()
+tnum.authorize(ip = "mssp.truenum.com:8080", creds = "runcihu@bu.edu:leopard")
+library(tibble)
+d1 <- tnum.getAllProperties()
+d2 <- tnum.getAllSubjects()
+d3 <- tnum.getAllTags()
+```
+
+## Assignment Part 1: Text Analysis with Truenumbers
+```{r, warning=FALSE}
+book <- tnum.query("subj:Time_Machine:Chapter:0:* or
+                   subj:Time_Machine:Chapter:1:* or
+                   subj:Time_Machine:Chapter:2:* or
+                   subj:Time_Machine:Chapter:4:* or
+                   subj:Time_Machine:Chapter:5:* or
+                   subj:Time_Machine:Chapter:6:* or 
+                   subj:Time_Machine:Chapter:7:* or
+                   subj:Time_Machine:Chapter:8:* or
+                   subj:Time_Machine:Chapter:10:* or
+                   subj:Time_Machine:Chapter:12:* or 
+                   subj:Time_Machine:Chapter:13:* or
+                   subj:Time_Machine:Chapter:15:* or
+                   subj:Time_Machine:Chapter:17:*")
+```
+
+
+```{r, warning=FALSE}
+weena <- data.frame(tnum.query("stringval:Weena"))
+tnum.graphPathList(weena$subject)
+```
+# Graph of "Weena"'s path list - Summary of Weena's story
+Weena is an Eloi(One of the two made up races in the book) girl, who is an important character in The Time Machine. From the Path list graph we can see in this book, “Weena” appears most in Chapter 10 and 12. "Weena" appears for the first time in Chapter 8, sentence 56, “Then I tried talk, and found that her name was Weena, which, though I don’t know what it meant, somehow seemed appropriate enough.” Chapter 16, sentence 32, “He spoke like one who was trying to keep hold of an idea that eluded him. ‘They were put into my pocket by Weena, when I travelled into Time.’”, is the last time the author mentioned "Weena". In this book, Weena once nearly drown in the river, the time traveller saved her, when another Eloi just stand by. Weena made a garland of flower for the time traveller as a gift and joined his expedition to take back his time machine. Before the time traveller seize his time machine back, Weena and he were surrounded by the Morlocks during the fighting. Weena was isolated with the time traveller and lost in the forest fire set by the time traveller. In Chapter 16, sentence 32, which is the last sentence Weena’s name appeared in the book, the time traveller found the flowers in his pocket, which were put by Weena. This is the main storyline of Weena in The Time Machine.
+
+
+```{r warning=FALSE}
+traveller <- data.frame(tnum.query("stringval:time traveller"))
+tnum.graphPathList(traveller$subject)
+```
+# Graph of "time traveller"'s path list - Summary of time traveller's story
+The time traveller was introducing to other people in his house at the beginning of the story. He believed time exists in the fourth dimension. During the conversation, he took out a tiny clock size machine and showed its function to other people, which is a time machine. After impressing his guest, he introduced them to the larger version of the time machine. 
+
+When his guests returned to his home a week later, they found the time traveller was dusty and in a disheveled situation. Then He told them the story about his time travelling experience. 
+
+After he turned on his time machine, he found that he was brought to the future, and landed in the year 802701 A.D. Figures speaking in a language that he does not understand surrounded him. Nevertheless, he found pleasant. Those figures were thin and beautiful, with had curly hair and gigantic eyes. They are the Elois. 
+
+The time traveller return to the place where his time machine was after the night-fall, he found that his machine was disappeared. Hence, he went to Elois’ society looking for the machine. Occasionally, he discovered and rescued an Eloi woman called Weena in a river when all the other Elois standing by watching. After this,  he noticed Elois was decadent and offish. 
+
+In the following days, he found that the species that took away his machine is called Morlocks; they were look like apes, and scary the Elois a lot. They live underground and only appear on surface ground at night. To take his time machine back, the time traveller decided to go to the underground world. 
+
+With Weena’s accompaniment, the time traveller reached the palace of green porcelain, and broke a lever off a machine to operate his time machine. 
+
+When the nights came the other day, the time traveller and Weena were attempting to across the forest. He started a fire in the forest to stop the Morlocks, but they found the Morlocks surrounded them on the contrast. During the fight, Weena got lost and isolated with the time traveller in the forest fire. Under Morlocks’ attack, the time traveller finally entered his time machine and went back to his time. When he get out of the machine, he found that his guests were waiting for him.
+
+At the end of the time, the narrator told the readers that the story was happened three years ago. After that, no one seen the time traveller again. The only provement for this incredible story is two dried out flowers. 
+
+
+```{r echo=FALSE, warning=FALSE}
+morlock <- data.frame(tnum.query("stringval:Morlock"))
+tnum.graphPathList(morlock$subject)
+eloi <- data.frame(tnum.query("stringval:Eloi"))
+tnum.graphPathList(eloi$subject)
+```
+# Graph of "Morlock"'s and "Eloi"'s path list - Summary of the two species
+Morlocks is one of the two made-up species in the Time Machine, the looks like apes, and lives in their underground homes. When the night falls, they will appear on the surface world and kill the Elois, the time traveller thinks they eat the Elois. They have more drama in the whole book since they are the enemies of the time traveller during his journey to take his time machine back.
+
+# Conclusion
+In conclusion from this project, we used the tnum package to help us take a quick look at the book instead of reading it. We use the main characters given, and search for the other main characters or groups in the book and use them as keywords to search their relative sentences in the book to take a brief view about their experienced in the book. During this process, we met some problems such as “the Narrator”, which is one character in this book, in which can’t be found through tnum.query function. Besides, it seems a hundred percent that in the book, the author used pronouns instead of the names of the characters. This will make us miss some sentences that the characters appeared. Although there are many problems, we still can use this package and dataset to build a basic understanding about the story of The Time Machine. 
+
+
+
+## Assignment part 2: Analysis of Numeric Data with Truenumbers
+# Choose 10 truenumber
+```{r, warning=FALSE}
+x1 <- tnum.query("subj:Connecticut* and prop:population:bachelors and numval: >1000")
+x1_tag <- mapply(FUN = tnum.addTag, guid = x1$id, 
+                 tag = "pop bachelors:large", 
+                 text = "the population of bachelors in Connecticut")
+tnum.getTagsOfTn(x1[1,]$id)
+k1 <-kable(x1)
+```
+
+```{r, warning=FALSE}
+x2 <- tnum.query("subj:Maine* and prop:population:bachelors and numval: >1000")
+x2_tag <- mapply(FUN = tnum.addTag, guid = x2$id, 
+                 tag = "pop bachelors:large", 
+                 text = "the population of bachelors in Maine")
+tnum.getTagsOfTn(x2[1,]$id)
+k2 <-kable(x2)
+```
+
+```{r, warning=FALSE}
+x3 <- tnum.query("subj:Massachusetts* and prop:population:bachelors and numval: >1000")
+x3_tag <- mapply(FUN = tnum.addTag, guid = x3$id, 
+                 tag = "pop bachelors:large", 
+                 text = "the population of bachelors in Massachusetts")
+tnum.getTagsOfTn(x1[3,]$id)
+k3 <-kable(x3)
+```
+
+```{r, warning=FALSE}
+x4 <- tnum.query("subj:New_Hampshire* and prop:population:bachelors and numval: >1000")
+x4_tag <- mapply(FUN = tnum.addTag, guid = x4$id, 
+                 tag = "pop bachelors:large", 
+                 text = "the population of bachelors in New Hampshire")
+tnum.getTagsOfTn(x4[1,]$id)
+k4 <-kable(x4)
+```
+
+```{r, warning=FALSE}
+x5 <- tnum.query("subj:Rhode_Island* and prop:population:bachelors and numval: >1000")
+x5_tag <- mapply(FUN = tnum.addTag, guid = x5$id, 
+                 tag = "pop bachelors:large", 
+                 text = "the population of bachelors in Rhode Island")
+tnum.getTagsOfTn(x5[1,]$id)
+k5 <-kable(x5)
+```
+
+```{r, warning=FALSE}
+x6 <- tnum.query("subj:Connecticut* and prop:median_household_income and numval: >1000")
+x6_tag <- mapply(FUN = tnum.addTag, guid = x6$id, 
+                 tag = "median_household_income:large", 
+                 text = "the median_household_income in Connecticut")
+tnum.getTagsOfTn(x6[1,]$id)
+k6 <-kable(x6)
+```
+
+```{r, warning=FALSE}
+x7 <- tnum.query("subj:Maine* and prop:median_household_income and numval: >1000")
+x7_tag <- mapply(FUN = tnum.addTag, guid = x7$id, 
+                 tag = "median_household_income:large", 
+                 text = "the median_household_income in Maine")
+tnum.getTagsOfTn(x7[1,]$id)
+k7 <-kable(x7)
+```
+
+```{r, warning=FALSE}
+x8 <- tnum.query("subj:Massachusetts* and prop:median_household_income and numval: >1000")
+x8_tag <- mapply(FUN = tnum.addTag, guid = x8$id, 
+                 tag = "median_household_income:large", 
+                 text = "the median_household_income in Massachusetts")
+tnum.getTagsOfTn(x8[1,]$id)
+k8 <- kable(x8)
+```
+
+```{r, warning=FALSE}
+x9 <- tnum.query("subj:New_Hampshire* and prop:median_household_income and numval: >1000")
+x9_tag <- mapply(FUN = tnum.addTag, guid = x9$id, 
+                 tag = "median_household_income:large", 
+                 text = "the median_household_income in New Hampshire")
+tnum.getTagsOfTn(x9[1,]$id)
+k9 <- kable(x9)
+```
+
+```{r, warning=FALSE}
+x10 <- tnum.query("subj:Rhode_Island* and prop:median_household_income and numval: >1000")
+x10_tag <- mapply(FUN = tnum.addTag, guid = x10$id, 
+                 tag = "median_household_income:large", 
+                 text = "the median_household_income in Rhode Island")
+tnum.getTagsOfTn(x10[1,]$id)
+k10 <- kable(x10)
+```
+
+# Post statement
+```{r, warning=FALSE}
+state1 <- tnum.postStatement( 
+  stmt = "the largest population of bachelors of Connecticut at New London County is 34499", 
+  notes = "Our first truenumber")
+
+state2 <- tnum.postStatement(
+  stmt = "the largest population of bachelors of Maine at Cumberland County is 61773", 
+  notes = "Our largest truenumber")
+
+state3 <- tnum.postStatement(
+  stmt = "the largest population of bachelors of Massachusetts at Worcester County is 124955", 
+  notes = "Our third truenumber")
+
+state4 <- tnum.postStatement(
+  stmt = "the largest population of bachelors of New Hampshire at Hillsboroug County is 70773", 
+  notes = "Our fourth truenumber")
+
+state5 <- tnum.postStatement(
+  stmt = "the largest population of bachelors of Rhode Island at Providence County is 76172", 
+  notes = "Our fifth truenumber")
+
+state6 <- tnum.postStatement(
+  stmt = "the highest median household income of Connecticut at Fairfield County is 95645", 
+  notes = "Our sixth truenumber")
+
+state7 <- tnum.postStatement(
+  stmt = "the highest median household income of Maine at Cumberland County is 73072", 
+  notes = "Our seventh truenumber")
+
+state8 <- tnum.postStatement(
+  stmt = "the highest median household income of Massachusetts at Nantucket County is 107717", 
+  notes = "Our eighth truenumber")
+
+state9 <- tnum.postStatement(
+  stmt = "the highest median household income of New Hampshire at Rockingham County is 93756", 
+  notes = "Our ninth truenumber")
+
+state10 <- tnum.postStatement(
+  stmt = "the highest median household income of Rhode Island at Washington County is 85531",
+  notes = "Our tenth truenumber")
+```
+
+#list
+```{r, warning=FALSE}
+df <- tnum.jsonArray(list(state1, state2, state3, state4, state5, state6, state7, state8, state9, state10))
+kable(df)
+```
+
+
+
+
