@@ -1,0 +1,128 @@
+---
+title: "Data for Shiny App"
+author: "Runci Hu"
+date: "2022-12-17"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE, warning=FALSE}
+Quar1 <- read.csv("LRTravelTimesQ4_21.csv")
+Quar2 <- read.csv("2022-Q1_LRTravelTimes.csv")
+Quar3 <- read.csv("2022-Q2_LRTravelTimes.csv")
+Quar4 <- read.csv("2022-Q3_LRTravelTimes.csv")
+```
+
+```{r include=FALSE, warning=FALSE}
+Quar1.1 <- Quar1 %>%
+    filter( service_date == "2021-10-15" | service_date == "2021-10-16"|
+            service_date == "2021-10-17" | service_date == "2021-10-18"|
+            service_date == "2021-10-19" | service_date == "2021-10-20"|
+            service_date == "2021-10-21" | service_date == "2021-11-15"| 
+            service_date == "2021-11-16" | service_date == "2021-11-17"| 
+            service_date == "2021-11-18" | service_date == "2021-11-19"| 
+            service_date == "2021-11-20" | service_date == "2021-11-21") %>%
+  mutate(season = "Fall") 
+Quar1.2 <- Quar1 %>%
+      filter( service_date == "2021-12-15" | service_date == "2021-12-16"| 
+              service_date == "2021-12-17" | service_date == "2021-12-18"| 
+              service_date == "2021-12-19" | service_date == "2021-12-20"| 
+              service_date == "2021-12-21") %>% 
+    mutate(season = "Winter")
+
+Quar2.1 <- Quar2 %>%
+    filter(service_date == "2022-01-15" | service_date == "2022-01-16" |
+           service_date == "2022-01-17" | service_date == "2022-01-18" |
+           service_date == "2022-01-19" | service_date == "2022-01-20" |
+           service_date == "2022-01-21" | service_date == "2022-02-15" |
+           service_date == "2022-02-16" | service_date == "2022-02-17" |
+           service_date == "2022-02-18" | service_date == "2022-02-19" |
+           service_date == "2022-02-20" | service_date == "2022-02-21" ) %>%
+  mutate(season = "Winter")
+Quar2.2 <- Quar2 %>%
+    filter(service_date == "2022-03-15" | service_date == "2022-03-16" |
+           service_date == "2022-03-17" | service_date == "2022-03-18" |
+           service_date == "2022-03-19" | service_date == "2022-03-20" |
+           service_date == "2022-03-21") %>%
+  mutate(season = "Spring")
+
+Quar3.1 <- Quar3 %>%
+    filter(service_date == "2022-04-15" | service_date == "2022-04-16" |
+           service_date == "2022-04-17" | service_date == "2022-04-18" |
+           service_date == "2022-04-19" | service_date == "2022-04-20" |
+           service_date == "2022-04-21" | service_date == "2022-05-15" |
+           service_date == "2022-05-16" | service_date == "2022-05-17" |
+           service_date == "2022-05-18" | service_date == "2022-05-19" |
+           service_date == "2022-05-20" | service_date == "2022-05-21") %>%
+  mutate(season = "Spring")
+           
+Quar3.2 <- Quar3 %>% 
+    filter(service_date == "2022-06-15" | service_date == "2022-06-16" |
+           service_date == "2022-06-17" | service_date == "2022-06-18" |
+           service_date == "2022-06-19" | service_date == "2022-06-20" |
+           service_date == "2022-06-21") %>%
+  mutate(season = "Summer")
+
+Quar4.1 <- Quar4 %>%
+    filter(service_date == "2022-07-15" | service_date == "2022-07-16" |
+           service_date == "2022-07-17" | service_date == "2022-07-18" |
+           service_date == "2022-07-19" | service_date == "2022-07-20" |
+           service_date == "2022-07-21" | service_date == "2022-08-15" |
+           service_date == "2022-08-16" | service_date == "2022-08-17" |
+           service_date == "2022-08-18" | service_date == "2022-08-19" |
+           service_date == "2022-08-20" | service_date == "2022-08-21") %>%
+  mutate(season = "Summer")
+Quar4.2 <- Quar4 %>%
+    filter(service_date == "2022-09-15" | service_date == "2022-09-16" |
+           service_date == "2022-09-17" | service_date == "2022-09-18" |
+           service_date == "2022-09-19" | service_date == "2022-09-20" |
+           service_date == "2022-09-21") %>%
+  mutate(season = "Fall")
+
+gl <- rbind(Quar1.1, Quar1.2, Quar2.1, Quar2.2, Quar3.1, Quar3.2, Quar4.1, Quar4.2)
+gl <- filter(gl, route_id != "Mattapan")
+```
+
+```{r include=FALSE, warning=FALSE}
+glb <- gl %>%
+  filter(from_stop_id == "170136" , to_stop_id == "70144") %>% 
+  mutate(mean_travel_time = mean(travel_time_sec)) 
+
+glc <- gl %>%
+  filter(from_stop_id == "70225" , to_stop_id == "70231") %>% 
+  mutate(mean_travel_time = mean(travel_time_sec))
+
+gld <- gl %>%
+  filter(from_stop_id == "70180" , to_stop_id == "70182") %>% 
+  mutate(mean_travel_time = mean(travel_time_sec))
+
+gle <- gl %>%
+  filter(from_stop_id == "70159" , to_stop_id == "70239") %>% 
+  mutate(mean_travel_time = mean(travel_time_sec))
+
+stopdata <- rbind(glb, glc, gld, gle)
+
+colnames(stops)[1] <- "from_stop_id"
+stops$from_stop_id <- as.numeric(stops$from_stop_id)
+
+stopdata <- stopdata %>% inner_join(stops, 
+                                    by = c("from_stop_id"))
+
+colnames(stops)[1] <- "to_stop_id"
+stops$to_stop_id <- as.numeric(stops$to_stop_id)
+
+stopdata <- stopdata %>% inner_join(stops, 
+                                    by = c("to_stop_id"))
+
+colnames(stopdata)[11] <- "from_stop_name"
+colnames(stopdata)[12] <- "from_stop_lat"
+colnames(stopdata)[13] <- "from_stop_lon"
+colnames(stopdata)[14] <- "to_stop_name"
+colnames(stopdata)[15] <- "to_stop_lat"
+colnames(stopdata)[16] <- "to_stop_lon"
+
+fwrite(stopdata,file='Stopdata.csv',sep=",")
+```

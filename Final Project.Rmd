@@ -1,0 +1,208 @@
+---
+title: "MBTA Data Analysis"
+author: "Runci Hu"
+date: "2022-12-13"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE, warning=FALSE}
+library(readr)
+library(tidyr)
+library(dplyr)
+library(tidyverse)
+library(treemap)
+# devtools::install_github("timelyportfolio/d3treeR")
+library(d3treeR)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+library(data.table)
+```
+
+
+```{r include=FALSE, warning=FALSE}
+# Nov_21 <- read.csv("stop_times_21.11.txt") %>% 
+#   mutate(season = "Fall")
+# Dec_21 <- read.csv("stop_times_21.12.txt") %>% 
+#   mutate(season = "Winter")
+# Jan_22 <- read.csv("stop_times_22.01.txt") %>% 
+#   mutate(season = "Winter")
+# Feb_22 <- read.csv("stop_times_22.02.txt") %>% 
+#   mutate(season = "Winter")
+# Mar_22 <- read.csv("stop_times_22.03.txt") %>% 
+#   mutate(season = "Spring")
+# Apr_22 <- read.csv("stop_times_22.04.txt") %>% 
+#   mutate(season = "Spring")
+# May_22 <- read.csv("stop_times_22.05.txt") %>% 
+#   mutate(season = "Spring")
+# Jun_22 <- read.csv("stop_times_22.06.txt") %>% 
+#   mutate(season = "Summer")
+# Jul_22 <- read.csv("stop_times_22.07.txt") %>% 
+#   mutate(season = "Summer")
+# Aug_22 <- read.csv("stop_times_22.08.txt") %>% 
+#   mutate(season = "Summer")
+# Sep_22 <- read.csv("stop_times_22.09.txt") %>% 
+#   mutate(season = "Fall")
+# Oct_22 <- read.csv("stop_times_22.10.txt") %>% 
+#   mutate(season = "Fall")
+# 
+# stoptime <- rbind(Nov_21, Dec_21, Jan_22, Feb_22, Mar_22, Apr_22, May_22, Jun_22, 
+#                   Jul_22, Aug_22,Sep_22, Oct_22)
+# stoptime <- stoptime[, -c(11,12)]
+# stoptime <- stoptime %>% drop_na()
+```
+
+```{r include=FALSE, warning=FALSE}
+# checkpoint <- read.csv("checkpoints.txt")
+# 
+# routes <- read.csv("routes.txt")
+
+stops <- read.csv("stops.txt")
+stops <- stops[, c(1, 3, 7, 8)]
+```
+## Abstract
+This report is studying MBTA data in Boston. The period of the research is 12 months from 2021 to 2022.  The final result has two parts. One is this text file, based on the gtfs Documents,  showing my analysis of topicalities of different types of MBTA  transportation. Another result is a Shiny App. It is made from MBTA open data. The main idea of the Shiny App is to represent stations and routes on the map. Besides, when you click select bars and markers, it will show corresponding results with the conditions.  
+<br>
+<br>
+
+## EDA
+```{r include=FALSE, warning=FALSE}
+rt_ptrn_Nov_21 <- read.csv("route_patterns_21.11.txt") %>% 
+  mutate(season = "Fall")
+rt_ptrn_Dec_21 <- read.csv("route_patterns_21.12.txt") %>% 
+  mutate(season = "Winter")
+rt_ptrn_Jan_22 <- read.csv("route_patterns_22.01.txt") %>% 
+  mutate(season = "Winter")
+rt_ptrn_Feb_22 <- read.csv("route_patterns_22.02.txt") %>% 
+  mutate(season = "Winter")
+rt_ptrn_Mar_22 <- read.csv("route_patterns_22.03.txt") %>% 
+  mutate(season = "Spring")
+rt_ptrn_Apr_22 <- read.csv("route_patterns_22.04.txt") %>% 
+  mutate(season = "Spring")
+rt_ptrn_May_22 <- read.csv("route_patterns_22.05.txt") %>% 
+  mutate(season = "Spring")
+rt_ptrn_Jun_22 <- read.csv("route_patterns_22.06.txt") %>% 
+  mutate(season = "Summer")
+rt_ptrn_Jul_22 <- read.csv("route_patterns_22.07.txt") %>% 
+  mutate(season = "Summer")
+rt_ptrn_Aug_22 <- read.csv("route_patterns_22.08.txt") %>% 
+  mutate(season = "Summer")
+rt_ptrn_Sep_22 <- read.csv("route_patterns_22.09.txt") %>% 
+  mutate(season = "Fall")
+rt_ptrn_Oct_22 <- read.csv("route_patterns_22.10.txt") %>% 
+  mutate(season = "Fall")
+
+rt_ptrn <- rbind(rt_ptrn_Nov_21, rt_ptrn_Dec_21, rt_ptrn_Jan_22, rt_ptrn_Feb_22, 
+                 rt_ptrn_Mar_22, rt_ptrn_Apr_22, rt_ptrn_May_22, rt_ptrn_Jun_22, 
+                 rt_ptrn_Jul_22, rt_ptrn_Aug_22,rt_ptrn_Sep_22, rt_ptrn_Oct_22)
+```
+
+```{r include=FALSE, warning=FALSE}
+# sub_ptrn <- rt_ptrn %>% filter(route_id=="Red" | route_id=="Orange" | 
+#                                  route_id == "Blue" |  route_id =="Green-B" | 
+#                                  route_id == "Green-C"| route_id == "Green-D" |
+#                                  route_id == "Green-E" )
+red <- rt_ptrn %>% filter(route_id=="Red") %>% 
+  count(route_pattern_typicality)
+orange <- rt_ptrn %>% filter(route_id=="Orange") %>% 
+  count(route_pattern_typicality)
+blue <- rt_ptrn %>% filter(route_id=="Blue") %>% 
+  count(route_pattern_typicality)
+greenb <- rt_ptrn %>% filter(route_id=="Green-B") %>% 
+  count(route_pattern_typicality)
+greenc <- rt_ptrn %>% filter(route_id=="Green-C") %>% 
+  count(route_pattern_typicality)
+greend <- rt_ptrn %>% filter(route_id=="Green-D") %>% 
+  count(route_pattern_typicality)
+greene <- rt_ptrn %>% filter(route_id=="Green-E") %>% 
+  count(route_pattern_typicality)
+
+typi1<- rbind(red, orange, blue, greenb, greenc, greend, greene)
+```
+<br>
+There is some information to help you understand plots. Typicality explains how common the route pattern is. There are four degrees, 0-4. 0 means not defined. 1 is the most typical pattern of a route, in which indicates that this route only has one pattern per direction. On the other hand, 2 shows a deviation from the regular route. For instance, Red Line has 2 routes in direction of southbound, Ashmont and Braintree.  Pattern 3 represents a highly atypical pattern. It only runs a few times a day. At least, pattern 4 is the route that diverts from the regular way, such as shuttle buses and snow routes.   
+<br>
+```{r message=FALSE, echo=FALSE, warning=FALSE, fig.height=5, fig.width=10, fig.cap='Numbers of Typicality of Subway'}
+group <- c(rep("red", 2), rep("orange", 2), rep("blue", 3), rep("greenb", 2), 
+           rep("greenc", 2), rep("greend", 3),rep("greene", 2))
+subgroup <- paste("typicality" , c(typi1$route_pattern_typicality), sep="-")
+value <- c(typi1$n)
+data <- data.frame(group,subgroup,value)
+
+
+t1 <- treemap(data,
+            index = c("group","subgroup"),
+            vSize = "value",
+            type = "index", 
+            title="Typicality of Subways")
+```
+The plot describes the values of subway types with their typicality. We can see that pattern 1 and pattern 4 appear on each subway line. It is easy to understand because subway lines get their unique pattern in each direction. Pattern 1 is the most common. The reason why pattern 4 shows a lot is subway repair. For example. The orange line was closed for renewing the pathway in the first half year of 2022. Hence, shuttle buses took place of transportation. Moreover, we can see that Green Lines are the most stable subway lines in general. 
+<br>
+```{r message=FALSE, include=FALSE}
+d1 <- count(rt_ptrn, route_pattern_time_desc) %>% 
+  arrange(desc(n))
+d1 %>% top_n(15)
+
+desc <-
+  rt_ptrn %>% filter( route_pattern_time_desc == "Weekdays only" |
+                      route_pattern_time_desc == "School days only" | 
+                      route_pattern_time_desc == "Early mornings only" | 
+                      route_pattern_time_desc == "Late nights only" | 
+                      route_pattern_time_desc == "Evenings only")
+
+Bus <- desc %>% filter(route_id != "Boat-F1")
+```
+
+```{r include=FALSE, warning=FALSE}
+wd <- Bus %>% filter(route_pattern_time_desc == "Weekdays only") %>% 
+  count(route_pattern_typicality) ## 3, 2
+sd <- Bus %>% filter(route_pattern_time_desc == "School days only") %>% 
+  count(route_pattern_typicality) ## 2,2 
+em <- Bus %>% filter(route_pattern_time_desc == "Early mornings only") %>% 
+  count(route_pattern_typicality) ##2, 2
+ln <- Bus %>% filter(route_pattern_time_desc == "Late nights only") %>% 
+  count(route_pattern_typicality) ## 1, 2
+ev <- Bus %>% filter(route_pattern_time_desc == "Evenings only") %>% 
+  count(route_pattern_typicality) ##2, 2
+
+typi2 <- rbind(wd, sd, em, ln, ev)
+```
+
+```{r echo=FALSE, warning=FALSE, fig.height=5, fig.width=10, fig.cap='Numbers of Typicality of Bus'}
+specie <- c(rep("Weekdays only", 3) , rep("School days only", 2) , 
+            rep("Early mornings only", 2) , rep("Late nights only", 1), 
+            rep("Evenings only", 2) )
+condition <- as.character(c(typi2$route_pattern_typicality))
+value <- c(typi2$n)
+data <- data.frame(specie,condition,value)
+
+ggplot(data, aes(fill=condition, y=value, x=condition)) + 
+    geom_bar(position="dodge", stat="identity") +
+    scale_fill_viridis(discrete = T, option = "E") +
+    ggtitle("Bus Typicality") +
+    facet_wrap(~specie) +
+    theme_ipsum() +
+    theme(legend.position="none") +
+    xlab("")
+```
+Afterwards, I explore the typicality of buses. Due to the large size of the dataset, I analysis data under service day condition. I combine data of “Weekdays only”, “School days only”, “early morning only”, “Late nigh only”, “Evenings only”. Watching the graph, we can get some useful information. Weekdays buses shows a normal pattern type.  In most of the time, they keep their route pattern. Some buses have more than one route pattern. And they do not divert from their regular way. In contrast, school days buses are more often to divert from their regular way. I did not find evidence explaining why this happens. Early morning buses and late buses all have high possibility of changing routes. 
+<br>
+Above all, my suggestion for taking the MBTA routs is taking subway. In the reason that subway typicality has a smaller number of pattern 3 plus pattern 4.  Smaller number represents that the route is more settled. 
+<br>
+
+## Shiny
+The data I used for the Shiny app is from the open data of MBTA. I chose days between the 15th to the 21st day in each month from October 2021 to September 2022. Because my conclusion above is taking the subway rather than the bus and Green Lines are the steadiest routes. I filtered the original data to data of Green Lines only, and I chose one pair in each line as an example.  In the Shiny App, people are able to choose which line they are taking. With this condition, they can see the location of the stations on the map, and the average travel time between the two stations. There is also a table below, which displays details information under the selected condition. 
+
+```{r include=FALSE,warning=FALSE}
+# ss <-  inner_join(stoptime, stops, by = "stop_id")
+# # fwrite(ss,file='Stoptime.csv',sep=",")
+```
+
+
